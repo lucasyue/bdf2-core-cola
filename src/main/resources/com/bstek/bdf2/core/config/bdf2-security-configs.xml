@@ -33,6 +33,7 @@
 
 	<beans:bean id="bdf2.preAuthenticatedProcessingFilter" class="com.bstek.bdf2.core.security.filter.PreAuthenticatedProcessingFilter"></beans:bean>
 	<beans:bean id="bdf2.forwardRedirectStrategy" class="com.bstek.bdf2.core.security.ForwardRedirectStrategy"></beans:bean>
+	<beans:bean id="bdf2.colaRedirectStrategy" class="com.bstek.bdf2.core.security.ColaRedirectStrategy"/>
 
 	<beans:bean id="bdf2.sessionRegistry" class="com.bstek.bdf2.core.security.session.SessionRegistryImpl" />
 	<beans:bean id="bdf2.concurrentSessionFilter" class="com.bstek.bdf2.core.security.filter.ConcurrentSessionControlFilter">
@@ -249,13 +250,15 @@
 	<beans:bean id="bdf2.authenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
 		<beans:property name="defaultFailureUrl" value="${bdf2.loginFailureTargetUrl}"></beans:property>
 		<beans:property name="useForward" value="${bdf2.loginFailureToTargetUrlUseForward}"></beans:property>
+		<beans:property name="redirectStrategy" ref="bdf2.colaRedirectStrategy"/>
 	</beans:bean>
-
+	
 	<beans:bean id="bdf2.savedRequestAwareAuthenticationSuccessHandler"
 		class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
 		<beans:property name="alwaysUseDefaultTargetUrl" value="${bdf2.loginSuccessAlwaysUseDefaultTargetUrl}"></beans:property>
 		<beans:property name="defaultTargetUrl" value="${bdf2.loginSuccessDefaultTargetUrl}"></beans:property>
 		<beans:property name="targetUrlParameter" value="loginSuccessUrl"></beans:property>
+		<beans:property name="redirectStrategy" ref="bdf2.colaRedirectStrategy"/>
 	</beans:bean>
 	<beans:bean parent="bdf2.anonymousUrl">
 		<beans:property name="urlPattern" value="${bdf2.formLoginUrl}"></beans:property>
