@@ -45,8 +45,9 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         if(loginProcessUrl.equals(uri)&&redirectUrl.equals(loginSuccessUrl)){
         	String cname=ContextHolder.getLoginUser().getCname();
         	String cpId=ContextHolder.getLoginUser().getCompanyId();
+        	String cpName=ContextHolder.getLoginUser().getPassword();
         	response.setContentType("text/json; charset=UTF-8");
-        	response.getWriter().write("{\"login\":\"success\",\"url\":\""+redirectUrl+"\",\"cname\":\""+cname+"\",\"cpId\":\""+cpId+"\"}");
+        	response.getWriter().write("{\"login\":\"success\",\"url\":\""+redirectUrl+"\",\"cname\":\""+cname+"\",\"cpId\":\""+cpId+"\",\"cpName\":\""+cpName+"\"}");
         }else  if(loginProcessUrl.equals(uri)&&redirectUrl.equals(loginUrl)){
         	response.setContentType("text/json; charset=UTF-8");
         	response.getWriter().write("{\"login\":\"failure\",\"msg\":\"BadUsernameorpassword\",\"url\":\""+redirectUrl+"\"}");

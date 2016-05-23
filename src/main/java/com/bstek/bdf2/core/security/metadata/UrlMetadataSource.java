@@ -232,8 +232,17 @@ public class UrlMetadataSource extends JdbcDao implements FilterInvocationSecuri
 	}
 	private boolean checkLoginSafeUrl(String url) {
 		for (LoginsafeUrl lsfUrl : loginSafeUrlPatterns) {
-			if (matcher.match(lsfUrl.getUrlPattern(), url)) {
-				return true;
+			if(lsfUrl.getUrlPattern().contains(",")){
+				String[] ps=lsfUrl.getUrlPattern().split(",");
+				for(String p:ps){
+					if (matcher.match(p, url)) {
+						return true;
+					}
+				}
+			}else{
+				if (matcher.match(lsfUrl.getUrlPattern(), url)) {
+					return true;
+				}
 			}
 		}
 		return false;
