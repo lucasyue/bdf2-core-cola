@@ -216,6 +216,7 @@
 		<beans:constructor-arg name="expiredUrl" value="${bdf2.sessionExpiredUrl}"></beans:constructor-arg>
 		<beans:property name="forceHttps" value="${bdf2.forceHttpsFormLogin}"></beans:property>
 		<beans:property name="useForward" value="${bdf2.useForwardFormLogin}"></beans:property>
+		<beans:property name="redirectStrategy" ref="bdf2.colaRedirectStrategy"/>
 	</beans:bean>
 	<beans:bean id="bdf2.casAuthenticationEntryPoint" class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
 		<beans:property name="loginUrl" value="${bdf2.casLoginUrl}"></beans:property>
