@@ -55,8 +55,10 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         	if("/frame/SessionExpired".equals(redirectUrl)||"/frame/SessionKicked".equals(redirectUrl)){
             	response.setContentType("text/json; charset=UTF-8");
             	response.setStatus(401);
+            	response.getWriter().write("Unauthorized");
         	}else if(redirectUrl.endsWith(loginUrl)&&!loginSuccessUrl.equals(uri)){
             	response.setStatus(401);
+            	response.getWriter().write("Unauthorized");
         	}else{
         		response.sendRedirect(redirectUrl);
         	}
