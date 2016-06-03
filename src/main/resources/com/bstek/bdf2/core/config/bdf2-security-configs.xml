@@ -264,12 +264,12 @@
 	<beans:bean parent="bdf2.anonymousUrl">
 		<beans:property name="urlPattern" value="${bdf2.formLoginUrl}"></beans:property>
 	</beans:bean>
-	<beans:bean parent="bdf2.anonymousUrl">
+	<!--for cola-ui <beans:bean parent="bdf2.anonymousUrl">
 		<beans:property name="urlPattern" value="${bdf2.sessionExpiredUrl}"></beans:property>
 	</beans:bean>
 	<beans:bean parent="bdf2.anonymousUrl">
 		<beans:property name="urlPattern" value="${bdf2.sessionKickAwayUrl}"></beans:property>
-	</beans:bean>
+	</beans:bean> -->
 	<beans:bean parent="bdf2.anonymousUrl">
 		<beans:property name="urlPattern" value="${bdf2.rememberMeLoginFailUrl}"></beans:property>
 	</beans:bean>

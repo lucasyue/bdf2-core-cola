@@ -52,14 +52,29 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         	response.setContentType("text/json; charset=UTF-8");
         	response.getWriter().write("{\"login\":\"failure\",\"msg\":\"BadUsernameorpassword\",\"url\":\""+redirectUrl+"\"}");
         } else{
-        	String referer=request.getHeader("Referer");//直接输入网址
-        	if("/frame/SessionExpired".equals(redirectUrl)||"/frame/SessionKicked".equals(redirectUrl)){
+        	String sessionExpired=Configure.getString("bdf2.sessionExpiredUrl");
+        	String sessionKicked=Configure.getString("bdf2.sessionKickAwayUrl");
+        	//String sessionExpired="/frame1/SessionExpired";
+        	//String sessionKicked="/frame1/SessionKicked";
+        	String referer=request.getHeader("Referer");
+        	if(referer==null){
+        		if(redirectUrl.equals(sessionKicked)||redirectUrl.equals(sessionExpired)){
+        			response.sendRedirect(loginUrl);
+        		}else{
+        			//直接输入网址
+        			response.sendRedirect(redirectUrl);
+        		}
+        	}else if(redirectUrl.endsWith(sessionExpired)||redirectUrl.endsWith(sessionKicked)){
             	response.setContentType("text/json; charset=UTF-8");
             	response.setStatus(401);
             	response.getWriter().write("Unauthorized");
-        	}else if(redirectUrl.endsWith(loginUrl)&&!loginSuccessUrl.equals(uri)&&referer!=null){
-            	response.setStatus(401);
-            	response.getWriter().write("Unauthorized");
+        	}else if(redirectUrl.endsWith(loginUrl)&&!loginSuccessUrl.equals(uri)){
+        		if(referer.endsWith(sessionKicked)){
+            		response.sendRedirect(redirectUrl);
+        		}else{
+        			response.setStatus(401);
+        			response.getWriter().write("Unauthorized");
+        		}
         	}else{
         		response.sendRedirect(redirectUrl);
         	}
