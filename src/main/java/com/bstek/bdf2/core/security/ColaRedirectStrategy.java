@@ -57,6 +57,7 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         	//String sessionExpired="/frame1/SessionExpired";
         	//String sessionKicked="/frame1/SessionKicked";
         	String referer=request.getHeader("Referer");
+        	String XMLHttpRequest=request.getHeader("X-Requested-With"); 
         	if(referer==null){
         		if(redirectUrl.equals(sessionKicked)||redirectUrl.equals(sessionExpired)){
         			response.sendRedirect(loginUrl);
@@ -65,15 +66,22 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         			response.sendRedirect(redirectUrl);
         		}
         	}else if(redirectUrl.endsWith(sessionExpired)||redirectUrl.endsWith(sessionKicked)){
-            	response.setContentType("text/json; charset=UTF-8");
-            	response.setStatus(401);
-            	response.getWriter().write("Unauthorized");
+            	if("XMLHttpRequest".equals(XMLHttpRequest)){
+            		response.setStatus(401);
+            		response.getWriter().write("Unauthorized");
+            	}else{
+        			response.sendRedirect(loginUrl);
+            	}
         	}else if(redirectUrl.endsWith(loginUrl)&&!loginSuccessUrl.equals(uri)){
         		if(referer.endsWith(sessionKicked)){
             		response.sendRedirect(redirectUrl);
         		}else{
-        			response.setStatus(401);
-        			response.getWriter().write("Unauthorized");
+        			if("XMLHttpRequest".equals(XMLHttpRequest)){
+                		response.setStatus(401);
+                		response.getWriter().write("Unauthorized");
+                	}else{
+            			response.sendRedirect(loginUrl);
+                	}
         		}
         	}else{
         		response.sendRedirect(redirectUrl);
