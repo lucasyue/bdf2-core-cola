@@ -52,11 +52,12 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         	response.setContentType("text/json; charset=UTF-8");
         	response.getWriter().write("{\"login\":\"failure\",\"msg\":\"BadUsernameorpassword\",\"url\":\""+redirectUrl+"\"}");
         } else{
+        	String referer=request.getHeader("Referer");//直接输入网址
         	if("/frame/SessionExpired".equals(redirectUrl)||"/frame/SessionKicked".equals(redirectUrl)){
             	response.setContentType("text/json; charset=UTF-8");
             	response.setStatus(401);
             	response.getWriter().write("Unauthorized");
-        	}else if(redirectUrl.endsWith(loginUrl)&&!loginSuccessUrl.equals(uri)){
+        	}else if(redirectUrl.endsWith(loginUrl)&&!loginSuccessUrl.equals(uri)&&referer!=null){
             	response.setStatus(401);
             	response.getWriter().write("Unauthorized");
         	}else{
