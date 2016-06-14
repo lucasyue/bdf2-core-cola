@@ -1,12 +1,15 @@
 package com.bstek.bdf2.core.security;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.util.UrlUtils;
 
@@ -22,6 +25,7 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
     protected final Log logger = LogFactory.getLog(getClass());
 
     private boolean contextRelative;
+	public static String LOGIN_USER_SESSION_KEY_TOCLIENTMAP="LOGIN_USER_SESSION_KEY_TOCLIENTMAP";
 
     /**
      * Redirects the response to the supplied URL.
@@ -42,20 +46,28 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         String loginSuccessUrl=Configure.getString("bdf2.loginSuccessDefaultTargetUrl");
         String loginUrl=Configure.getString("bdf2.formLoginUrl");
         //处理ajax请求的响应结果
+        ObjectMapper mapper = new ObjectMapper();
+        @SuppressWarnings("unchecked")
+        Map<String,Object>toClientMap=(Map<String, Object>) ContextHolder.getHttpSession().getAttribute(LOGIN_USER_SESSION_KEY_TOCLIENTMAP);
+        if(toClientMap==null){
+        	toClientMap=new HashMap<String,Object>();
+        }
         if(loginProcessUrl.equals(uri)&&redirectUrl.equals(loginSuccessUrl)){
-        	String cname=ContextHolder.getLoginUser().getCname();
-        	String cpId=ContextHolder.getLoginUser().getCompanyId();
-        	String cpName=ContextHolder.getLoginUser().getPassword();
         	response.setContentType("text/json; charset=UTF-8");
-        	response.getWriter().write("{\"login\":\"success\",\"url\":\""+redirectUrl+"\",\"cname\":\""+cname+"\",\"cpId\":\""+cpId+"\",\"cpName\":\""+cpName+"\"}");
+        	toClientMap.put("login", "success");
+        	toClientMap.put("url", redirectUrl);
+            String rs=mapper.writeValueAsString(toClientMap);
+            response.getWriter().write(rs);
         }else  if(loginProcessUrl.equals(uri)&&redirectUrl.equals(loginUrl)){
         	response.setContentType("text/json; charset=UTF-8");
-        	response.getWriter().write("{\"login\":\"failure\",\"msg\":\"BadUsernameorpassword\",\"url\":\""+redirectUrl+"\"}");
+        	toClientMap.put("login", "failure");
+        	toClientMap.put("msg", "BadUsernameorpassword");
+        	toClientMap.put("url", redirectUrl);
+            String rs=mapper.writeValueAsString(toClientMap);
+        	response.getWriter().write(rs);
         } else{
         	String sessionExpired=Configure.getString("bdf2.sessionExpiredUrl");
         	String sessionKicked=Configure.getString("bdf2.sessionKickAwayUrl");
-        	//String sessionExpired="/frame1/SessionExpired";
-        	//String sessionKicked="/frame1/SessionKicked";
         	String referer=request.getHeader("Referer");
         	String XMLHttpRequest=request.getHeader("X-Requested-With"); 
         	if(referer==null){
