@@ -42,6 +42,10 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
             logger.debug("Redirecting to '" + redirectUrl + "'");
         }
         String uri=request.getRequestURI();
+        String contextpath=request.getContextPath();
+        if(!"/".equals(contextpath)){
+        	uri=uri.substring(contextpath.length());
+        }
         String loginProcessUrl=Configure.getString("bdf2.loginProcessUrl");
         String loginSuccessUrl=Configure.getString("bdf2.loginSuccessDefaultTargetUrl");
         String loginUrl=Configure.getString("bdf2.formLoginUrl");
@@ -52,13 +56,13 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         if(toClientMap==null){
         	toClientMap=new HashMap<String,Object>();
         }
-        if(loginProcessUrl.equals(uri)&&redirectUrl.equals(loginSuccessUrl)){
+        if(loginProcessUrl.equals(uri)&&redirectUrl.endsWith(loginSuccessUrl)){
         	response.setContentType("text/json; charset=UTF-8");
         	toClientMap.put("login", "success");
         	toClientMap.put("url", redirectUrl);
             String rs=mapper.writeValueAsString(toClientMap);
             response.getWriter().write(rs);
-        }else  if(loginProcessUrl.equals(uri)&&redirectUrl.equals(loginUrl)){
+        }else  if(loginProcessUrl.equals(uri)&&redirectUrl.endsWith(loginUrl)){
         	response.setContentType("text/json; charset=UTF-8");
         	toClientMap.put("login", "failure");
         	toClientMap.put("msg", "BadUsernameorpassword");
@@ -71,7 +75,7 @@ public class ColaRedirectStrategy extends DefaultRedirectStrategy {
         	String referer=request.getHeader("Referer");
         	String XMLHttpRequest=request.getHeader("X-Requested-With"); 
         	if(referer==null){
-        		if(redirectUrl.equals(sessionKicked)||redirectUrl.equals(sessionExpired)){
+        		if(redirectUrl.endsWith(sessionKicked)||redirectUrl.endsWith(sessionExpired)){
         			response.sendRedirect(loginUrl);
         		}else{
         			//直接输入网址
